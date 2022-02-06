@@ -3,11 +3,14 @@ use lettre::{SmtpClient, Transport};
 use lettre_email::EmailBuilder;
 use std::fs::File;
 use std::io::Read;
+use std::env;
+
 
 #[tokio::main]
 async fn main() {
-
-    let mut file = File::open("config").unwrap();
+    let mut dir = env::current_dir().unwrap();
+    dir.push("config");
+    let mut file = File::open(dir).unwrap();
     let mut result = String::new();
     file.read_to_string(&mut result).unwrap();
     let mut config = result.split_ascii_whitespace();
