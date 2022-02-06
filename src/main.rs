@@ -5,11 +5,14 @@ use std::fs::File;
 use std::io::Read;
 use std::env;
 
-
 #[tokio::main]
 async fn main() {
-    let mut dir = env::current_dir().unwrap();
+    let mut dir = env::current_exe().unwrap();
+    dir.pop();
+    dir.pop();
+    dir.pop();
     dir.push("config");
+    println!("{}", dir.display());
     let mut file = File::open(dir).unwrap();
     let mut result = String::new();
     file.read_to_string(&mut result).unwrap();
