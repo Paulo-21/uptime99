@@ -1,13 +1,20 @@
 use lettre::smtp::authentication::Credentials;
 use lettre::{SmtpClient, Transport};
 use lettre_email::EmailBuilder;
+use std::fs::File;
+use std::io::Read;
 
 #[tokio::main]
 async fn main() {
-    // Attempt to get an IP address and print it.
+    
+    let mut file = File::open("config").unwrap();
+    let mut result = String::new();
+    file.read_to_string(&mut result).unwrap();
+    let mut config = result.split('\n');
+    let mut email_dest = config.next().unwrap().to_string();
+    let password = config.next().unwrap().to_string();
     let mut resultat = String::from("Le server à redémarer, voici la response du server : <br>");
-    let email_dest = String::from("L'email en question");
-    let password = String::from("Mes couilles sur ton front");
+    email_dest.pop();
 
     let ip_reponse = {
         if let Some(ip) = public_ip::addr().await {
