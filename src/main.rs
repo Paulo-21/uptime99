@@ -6,16 +6,15 @@ use std::io::Read;
 
 #[tokio::main]
 async fn main() {
-    
+
     let mut file = File::open("config").unwrap();
     let mut result = String::new();
     file.read_to_string(&mut result).unwrap();
-    let mut config = result.split('\n');
-    let mut email_dest = config.next().unwrap().to_string();
+    let mut config = result.split_ascii_whitespace();
+    let email_dest = config.next().unwrap().to_string();
     let password = config.next().unwrap().to_string();
     let mut resultat = String::from("Le server à redémarer, voici la response du server : <br>");
-    email_dest.pop();
-
+    
     let ip_reponse = {
         if let Some(ip) = public_ip::addr().await {
             ip.to_string()
