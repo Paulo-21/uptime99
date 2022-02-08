@@ -36,18 +36,20 @@ async fn main() {
     let result_ip = get_file(dir_cloned_ip);
     let mut config = result_config.split_ascii_whitespace();
     let email_dest = config.next().unwrap().to_string();
+    let email_from = config.next().unwrap().to_string();
     let password = config.next().unwrap().to_string();
+    
     let mut resultat = String::from("Le server à redémarer, voici la response du server : <br>");
     
     let ip_reponse = get_ip().await;
     if !result_ip.eq(&*ip_reponse) {
-        
+
         resultat.push_str("<b>");
         resultat.push_str(&*ip_reponse);
         resultat.push_str("<b>");
         let email = EmailBuilder::new()
             .to(email_dest.clone())
-            .from(email_dest.clone())
+            .from(email_from.clone())
             .subject("The server has restarted")
             .html(resultat)
             .build()
@@ -55,7 +57,7 @@ async fn main() {
 
         let mut mailer = SmtpClient::new_simple("smtp.gmail.com")
             .unwrap()
-            .credentials(Credentials::new(email_dest, password))
+            .credentials(Credentials::new(email_from, password))
             .transport();
 
         let result = mailer.send(email.into());
@@ -64,5 +66,4 @@ async fn main() {
         dir.push("last_ip");
         fs::write(dir, ip_reponse).unwrap();
     }
-    
 }
