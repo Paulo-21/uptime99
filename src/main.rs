@@ -5,12 +5,23 @@ use std::fs::{self, File};
 use std::io::Read;
 use std::env;
 use std::path::PathBuf;
+use std::{thread, time};
 
 fn get_file(dir : PathBuf) -> String {
     let mut file = File::open(dir).unwrap();
     let mut result = String::new();
     file.read_to_string(&mut result).unwrap();
     result
+}
+async fn get_ip() -> String {
+    for _i in 0..3 {
+        if let Some(ip) = public_ip::addr_v4().await {
+            return ip.to_string()
+        }
+        let ten_millis = time::Duration::from_millis(3000);
+        thread::sleep(ten_millis);
+    }
+    "couldn't get an IP address".to_string()
 }
 #[tokio::main]
 async fn main() {
@@ -28,17 +39,9 @@ async fn main() {
     let password = config.next().unwrap().to_string();
     let mut resultat = String::from("Le server à redémarer, voici la response du server : <br>");
     
-    let ip_reponse = {
-        if let Some(ip) = public_ip::addr_v4().await {
-            ip.to_string()
-        } else {
-            "couldn't get an IP address".to_string()
-        }
-    };
-    if result_ip.eq(&*ip_reponse) {
-        ()
-    }
-    else {
+    let ip_reponse = get_ip().await;
+    if !result_ip.eq(&*ip_reponse) {
+        
         resultat.push_str("<b>");
         resultat.push_str(&*ip_reponse);
         resultat.push_str("<b>");
