@@ -29,7 +29,7 @@ async fn main() {
     let mut resultat = String::from("Le server à redémarer, voici la response du server : <br>");
     
     let ip_reponse = {
-        if let Some(ip) = public_ip::addr().await {
+        if let Some(ip) = public_ip::addr_v4().await {
             ip.to_string()
         } else {
             "couldn't get an IP address".to_string()
